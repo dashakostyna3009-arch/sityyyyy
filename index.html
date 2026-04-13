@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Геометричний Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .shapes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .shape-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .shape-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .shape-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .shape-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .shape-title {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            opacity: 0.9;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Специфічні кольори для карток */
+        .circle-card .shape-title { color: #e74c3c; }
+        .square-card .shape-title { color: #3498db; }
+        .rectangle-card .shape-title { color: #2ecc71; }
+        .triangle-card .shape-title { color: #f39c12; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .shapes-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔷 Геометричний Калькулятор 🔷</h1>
+        
+        <div class="shapes-grid">
+            <!-- КОЛО -->
+            <div class="shape-card circle-card">
+                <div class="shape-header">
+                    <img src="Графіка/circle.png" alt="Коло" class="shape-icon" onerror="this.src='https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/5eaad1f36c05a898417a8f508a481767e905f0d9.jpg'">
+                    <h2 class="shape-title">Коло</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label for="circle-radius">Радіус (r):</label>
+                    <input type="number" id="circle-radius" placeholder="Введіть радіус" min="0" step="any">
+                    <span class="error" id="circle-error">Введіть додатнє число</span>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculateCircle()">Обчислити</button>
+                
+                <div class="results" id="circle-results">
+                    <div class="result-item">
+                        <span class="result-label">Площа (S):</span>
+                        <span class="result-value" id="circle-area">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Периметр (C):</span>
+                        <span class="result-value" id="circle-perimeter">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Діаметр (d):</span>
+                        <span class="result-value" id="circle-diameter">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- КВАДРАТ -->
+            <div class="shape-card square-card">
+                <div class="shape-header">
+                    <img src="Графіка/square.png" alt="Квадрат" class="shape-icon" onerror="this.src='https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/5eaad1f36c05a898417a8f508a481767e905f0d9.jpg'">
+                    <h2 class="shape-title">Квадрат</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label for="square-side">Сторона (a):</label>
+                    <input type="number" id="square-side" placeholder="Введіть сторону" min="0" step="any">
+                    <span class="error" id="square-error">Введіть додатнє число</span>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculateSquare()">Обчислити</button>
+                
+                <div class="results" id="square-results">
+                    <div class="result-item">
+                        <span class="result-label">Площа (S):</span>
+                        <span class="result-value" id="square-area">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Периметр (P):</span>
+                        <span class="result-value" id="square-perimeter">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Діагональ (d):</span>
+                        <span class="result-value" id="square-diagonal">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРЯМОКУТНИК -->
+            <div class="shape-card rectangle-card">
+                <div class="shape-header">
+                    <img src="Графіка/rectangle.png" alt="Прямокутник" class="shape-icon" onerror="this.src='https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/5eaad1f36c05a898417a8f508a481767e905f0d9.jpg'">
+                    <h2 class="shape-title">Прямокутник</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label for="rect-width">Ширина (a):</label>
+                    <input type="number" id="rect-width" placeholder="Введіть ширину" min="0" step="any">
+                </div>
+                
+                <div class="input-group">
+                    <label for="rect-height">Висота (b):</label>
+                    <input type="number" id="rect-height" placeholder="Введіть висоту" min="0" step="any">
+                    <span class="error" id="rect-error">Введіть додатні числа</span>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculateRectangle()">Обчислити</button>
+                
+                <div class="results" id="rect-results">
+                    <div class="result-item">
+                        <span class="result-label">Площа (S):</span>
+                        <span class="result-value" id="rect-area">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Периметр (P):</span>
+                        <span class="result-value" id="rect-perimeter">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Діагональ (d):</span>
+                        <span class="result-value" id="rect-diagonal">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ТРИКУТНИК -->
+            <div class="shape-card triangle-card">
+                <div class="shape-header">
+                    <img src="Графіка/triangle.png" alt="Трикутник" class="shape-icon" onerror="this.src='https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/5eaad1f36c05a898417a8f508a481767e905f0d9.jpg'">
+                    <h2 class="shape-title">Трикутник</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label for="tri-side1">Сторона a:</label>
+                    <input type="number" id="tri-side1" placeholder="Введіть сторону a" min="0" step="any">
+                </div>
+                
+                <div class="input-group">
+                    <label for="tri-side2">Сторона b:</label>
+                    <input type="number" id="tri-side2" placeholder="Введіть сторону b" min="0" step="any">
+                </div>
+                
+                <div class="input-group">
+                    <label for="tri-side3">Сторона c:</label>
+                    <input type="number" id="tri-side3" placeholder="Введіть сторону c" min="0" step="any">
+                    <span class="error" id="tri-error">Неможливо побудувати трикутник</span>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculateTriangle()">Обчислити</button>
+                
+                <div class="results" id="tri-results">
+                    <div class="result-item">
+                        <span class="result-label">Площа (S):</span>
+                        <span class="result-value" id="tri-area">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Периметр (P):</span>
+                        <span class="result-value" id="tri-perimeter">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Радіус вписаного (r):</span>
+                        <span class="result-value" id="tri-inradius">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Радіус описаного (R):</span>
+                        <span class="result-value" id="tri-circumradius">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Форматування числа (максимум 4 знаки після коми)
+        function formatNumber(num) {
+            if (Number.isInteger(num)) return num;
+            return parseFloat(num.toFixed(4));
+        }
+
+        // Перевірка валідності введення
+        function validateInput(value) {
+            const num = parseFloat(value);
+            return !isNaN(num) && num > 0;
+        }
+
+        // Показати результати
+        function showResults(elementId) {
+            document.getElementById(elementId).classList.add('show');
+        }
+
+        // Приховати помилку
+        function hideError(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Показати помилку
+        function showError(elementId) {
+            document.getElementById(elementId).style.display = 'block';
+        }
+
+        // Обчислення кола
+        function calculateCircle() {
+            const radius = document.getElementById('circle-radius').value;
+            
+            if (!validateInput(radius)) {
+                showError('circle-error');
+                document.getElementById('circle-results').classList.remove('show');
+                return;
+            }
+            
+            hideError('circle-error');
+            const r = parseFloat(radius);
+            
+            const area = Math.PI * r * r;
+            const perimeter = 2 * Math.PI * r;
+            const diameter = 2 * r;
+            
+            document.getElementById('circle-area').textContent = formatNumber(area);
+            document.getElementById('circle-perimeter').textContent = formatNumber(perimeter);
+            document.getElementById('circle-diameter').textContent = formatNumber(diameter);
+            
+            showResults('circle-results');
+        }
+
+        // Обчислення квадрата
+        function calculateSquare() {
+            const side = document.getElementById('square-side').value;
+            
+            if (!validateInput(side)) {
+                showError('square-error');
+                document.getElementById('square-results').classList.remove('show');
+                return;
+            }
+            
+            hideError('square-error');
+            const a = parseFloat(side);
+            
+            const area = a * a;
+            const perimeter = 4 * a;
+            const diagonal = a * Math.sqrt(2);
+            
+            document.getElementById('square-area').textContent = formatNumber(area);
+            document.getElementById('square-perimeter').textContent = formatNumber(perimeter);
+            document.getElementById('square-diagonal').textContent = formatNumber(diagonal);
+            
+            showResults('square-results');
+        }
+
+        // Обчислення прямокутника
+        function calculateRectangle() {
+            const width = document.getElementById('rect-width').value;
+            const height = document.getElementById('rect-height').value;
+            
+            if (!validateInput(width) || !validateInput(height)) {
+                showError('rect-error');
+                document.getElementById('rect-results').classList.remove('show');
+                return;
+            }
+            
+            hideError('rect-error');
+            const a = parseFloat(width);
+            const b = parseFloat(height);
+            
+            const area = a * b;
+            const perimeter = 2 * (a + b);
+            const diagonal = Math.sqrt(a * a + b * b);
+            
+            document.getElementById('rect-area').textContent = formatNumber(area);
+            document.getElementById('rect-perimeter').textContent = formatNumber(perimeter);
+            document.getElementById('rect-diagonal').textContent = formatNumber(diagonal);
+            
+            showResults('rect-results');
+        }
+
+        // Обчислення трикутника
+        function calculateTriangle() {
+            const a = parseFloat(document.getElementById('tri-side1').value);
+            const b = parseFloat(document.getElementById('tri-side2').value);
+            const c = parseFloat(document.getElementById('tri-side3').value);
+            
+            // Перевірка на існування трикутника
+            if (!validateInput(a) || !validateInput(b) || !validateInput(c) || 
+                (a + b <= c) || (a + c <= b) || (b + c <= a)) {
+                showError('tri-error');
+                document.getElementById('tri-results').classList.remove('show');
+                return;
+            }
+            
+            hideError('tri-error');
+            
+            const perimeter = a + b + c;
+            const semiPerimeter = perimeter / 2;
+            
+            // Формула Герона для площі
+            const area = Math.sqrt(semiPerimeter * (semiPerimeter - a) * 
+                                  (semiPerimeter - b) * (semiPerimeter - c));
+            
+            // Радіус вписаного кола
+            const inradius = area / semiPerimeter;
+            
+            // Радіус описаного кола
+            const circumradius = (a * b * c) / (4 * area);
+            
+            document.getElementById('tri-area').textContent = formatNumber(area);
+            document.getElementById('tri-perimeter').textContent = formatNumber(perimeter);
+            document.getElementById('tri-inradius').textContent = formatNumber(inradius);
+            document.getElementById('tri-circumradius').textContent = formatNumber(circumradius);
+            
+            showResults('tri-results');
+        }
+
+        // Обробка Enter для всіх полів вводу
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const card = this.closest('.shape-card');
+                    const btn = card.querySelector('.btn-calculate');
+                    btn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
